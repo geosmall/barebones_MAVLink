@@ -70,23 +70,38 @@ void MVL_Handle_Manual_Control(mavlink_message_t* mvl_msg_ptr)
 
 void MVL_Handle_Param_Request_List(mavlink_message_t* mvl_msg_ptr)
 {
-  mavlink_param_value_t mvl_param;
+  mavlink_param_value_t mvl_param1;
+  mavlink_param_value_t mvl_param2;
   
-  mvl_param.param_id[0] = 'a'; //a parameter ID string, less than 16 characters.
-  mvl_param.param_id[1] = '_';
-  mvl_param.param_id[2] = 'p';
-  mvl_param.param_id[3] = 'a';
-  mvl_param.param_id[4] = 'r';
-  mvl_param.param_id[5] = 'm';
-  mvl_param.param_id[6] = 0; //null terminated
-  mvl_param.param_value = 123.456; //the parameter value as a float
-  mvl_param.param_type = MAV_PARAM_TYPE_REAL32; //https://mavlink.io/en/messages/common.html#MAV_PARAM_TYPE
-  mvl_param.param_count = 1; //We have just one parameter to send. 
-  mvl_param.param_index = 0; 
-  mavlink_msg_param_value_encode_chan(mvl_sysid,mvl_compid,mvl_chan,
-                                      &mvl_tx_message,&mvl_param);
+  // mvl_param.param_id[0] = 'a'; //a parameter ID string, less than 16 characters.
+  // mvl_param.param_id[1] = '_';
+  // mvl_param.param_id[2] = 'p';
+  // mvl_param.param_id[3] = 'a';
+  // mvl_param.param_id[4] = 'r';
+  // mvl_param.param_id[5] = 'm';
+  // mvl_param.param_id[6] = 0; //null terminated
+  strcpy(mvl_param1.param_id, "Geo_param_01");
+  mvl_param1.param_value = 654.321; //the parameter value as a float
+  mvl_param1.param_type = MAV_PARAM_TYPE_REAL32; //https://mavlink.io/en/messages/common.html#MAV_PARAM_TYPE
+  mvl_param1.param_count = 2; //We have just one parameter to send. 
+  mvl_param1.param_index = 0; 
+  mavlink_msg_param_value_encode_chan(mvl_sysid, mvl_compid,mvl_chan, &mvl_tx_message, &mvl_param1);
   MVL_Transmit_Message(&mvl_tx_message);
   
+mavlink_param_union_t param;
+int32_t integer = 20000;
+param.param_int32 = integer;
+param.type = MAV_PARAM_TYPE_INT32;
+
+  strcpy(mvl_param2.param_id, "Geo_param_02");
+  mvl_param2.param_value = param.param_float; 
+  mvl_param2.param_type =  param.type; //https://mavlink.io/en/messages/common.html#MAV_PARAM_TYPE
+  mvl_param2.param_count = 2; //We have just one parameter to send. 
+  mvl_param2.param_index = 1; 
+  mavlink_msg_param_value_encode_chan(mvl_sysid, mvl_compid,mvl_chan, &mvl_tx_message, &mvl_param2);
+
+  MVL_Transmit_Message(&mvl_tx_message);
+
 }
 
 void MVL_Handle_Command_Long(mavlink_message_t* mvl_msg_ptr)
